@@ -19,16 +19,22 @@ const router = express.Router();
 
 const createRouter = ()=>{
     router.get("/",(req,res)=>{
-        res.send(fileDb.getData(req.params.date));
+        res.send(fileDb.getData());
     });
-    router.post("/",(req,res)=>{
+
+    router.post("/",upload.single("image"),(req,res)=>{
         const product =req.body;
-        if(product.name.length > 0 && product.description.length > 0 && product.price !== null){
-            fileDb.addProduct(product).then(result=>{
-                res.send(result);
-            })
-        }else{
-            res.send({message: "Error"});
+        if(req.body.id === "" || req.body.id === undefined){
+            if (req.file) product.image = req.file.filename;
+            if(product.name.length > 0 && product.description.length > 0 && product.price !== null){
+                fileDb.addProduct(product).then(result=>{
+                    res.send(result);
+                })
+            }else{
+                res.send({message: "Error"});
+            }
+        }else {
+            fileDb.ChangeProduct(product);
         }
     });
 

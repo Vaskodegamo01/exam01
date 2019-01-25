@@ -12,7 +12,7 @@ app.use(cors());
 fileDb.init().then(()=>{
     console.log("Database was loaded");
 
-    app.use("/", product);
+    app.use("/product", product());
 
     app.listen(port, ()=>{
         console.log("Server on port 3333");

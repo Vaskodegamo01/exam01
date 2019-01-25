@@ -1,101 +1,99 @@
-let url = "http://127.0.0.1:3333/messages";
-lastdatatime = new Date();
-queryparam = {"datatime" : window.lastdatatime};
-
 $(()=>{
+    const url = "http://localhost:3333/product";
+    let container = $('#mydiv');
 
-    $("#btn").click((e)=>{
+
+    $("#mydiv").click(
+        function(event) {
+            let id = "form" + event.target.id.slice(-8);
+            event.preventDefault();
+            let idForm = $("#" + id);
+            if (!idForm[0].checkValidity()) {
+                $('<input type="submit">').hide().appendTo(idForm).click().remove();
+                return;
+            }
+            e.preventDefault();
+            const data = new FormData(document.getElementById("id"));
+            $.ajax({
+                method: "POST",
+                url: url,
+                data: data,
+                contentType: false,
+                processData: false
+            })
+        });
+
+    getMessages = () => {
+        $.ajax({
+            method: "GET",
+            url: url
+        }).then((response)=>{
+            for(i=0;i<response.length; i++){
+                let form = $(`<form method="post" id='form${response[i].id}' action="">`);
+                let div_name = $(`<div class="form-group">`);
+                let label_name = $(`<label for='name${response[i].id}'>name</label>`);
+                let input_name =$(`<input type="text" class="form-control" id='name${response[i].id}' name="name" value='${response[i].name}'>`);
+                div_name.append(label_name,input_name);
+                let div_description = $(`<div class="form-group">`);
+                let label_description = $(`<label for='description${response[i].id}'>description</label>`);
+                let input_description =$(`<textarea class="form-control" rows="2" placeholder='${response[i].description}' id='description${response[i].id}'  name="description">`);
+                div_description.append(label_description,input_description);
+                let div_price = $(`<div class="form-group">`);
+                let label_price = $(`<label for='price${response[i].id}'>price</label>`);
+                let input_price =$(`<input type="number" class="form-control" id='price${response[i].id}' name="price" value='${response[i].price}'>`);
+                div_price.append(label_price,input_price);
+                let div_image = $(`<div class="form-group">`);
+                let label_image = $(`<label for='image${response[i].id}'>image</label>`);
+                let input_image =$(`<input type="file" class="form-control" id='image${response[i].id}' name="image" value='${response[i].image}'>`);
+                div_image.append(label_image,input_image);
+                let div = $(`<div style="overflow: hidden; padding-right: .5em;">`);
+                let button =$(`<input type="submit" id='btn${response[i].id}' class="btn btn-primary" value="save changes">`);
+                div.append(button);
+                form.append(div_name,div_description,div_price,div_image,div);
+                container.prepend(form);
+            }
+        });
+    };
+
+    getMessages();
+
+    $("#btn").on('click',(e)=>{
         let idForm = $("#ajax_form");
         if(!idForm[0].checkValidity()){
             $('<input type="submit">').hide().appendTo(idForm).click().remove();
             return;
         }
         e.preventDefault();
-        let idResultForm = $("#result_form");
-        sendAjaxForm(idResultForm, idForm, url);
-        return false;
-    });
+        const data = new FormData(document.getElementById("ajax_form"));
+        $.ajax({
+            method: "POST",
+            url: url,
+            data: data,
+            contentType: false,
+            processData: false
+        }).then((response) =>{
+            let form = $(`<form method="post" id='form${response.id}' action="">`);
+            let div_name = $(`<div class="form-group">`);
+            let label_name = $(`<label for='name${response.id}'>name</label>`);
+            let input_name =$(`<input type="text" class="form-control" id='name${response.id}' name="name" value='${response.name}'>`);
+            div_name.append(label_name,input_name);
+            let div_description = $(`<div class="form-group">`);
+            let label_description = $(`<label for='description${response.id}'>description</label>`);
+            let input_description =$(`<textarea class="form-control" rows="2" placeholder='${response.description}' id='description${response.id}'  name="description">`);
+            div_description.append(label_description,input_description);
+            let div_price = $(`<div class="form-group">`);
+            let label_price = $(`<label for='price${response.id}'>price</label>`);
+            let input_price =$(`<input type="number" class="form-control" id='price${response.id}' name="price" value='${response.price}'>`);
+            div_price.append(label_price,input_price);
+            let div_image = $(`<div class="form-group">`);
+            let label_image = $(`<label for='image${response.id}'>image</label>`);
+            let input_image =$(`<input type="file" class="form-control" id='image${response.id}' name="image" value='${response.image}'>`);
+            div_image.append(label_image,input_image);
+            let div = $(`<div style="overflow: hidden; padding-right: .5em;">`);
+            let button =$(`<input type="submit" id='btn${response.id}' class="btn btn-primary" value="save changes">`);
+            div.append(button);
+            form.append(div_name,div_description,div_price,div_image,div);
+            container.prepend(form);
+        })
+    })
 });
-
-
-function sendAjaxForm(result_form, ajax_form, url) {
-    const data = new FormData(document.getElementById("ajax_form"));
-    $.ajax({
-        url: url, //url страницы
-        type: "POST", //метод отправки
-        data: data,
-        processData: false,
-        contentType: false,
-        success: function(response) { //Данные отправлены успешно
-            result = JSON.stringify(response);
-            result_form.html('Данные отправлены успешно' + "<br>" + result);
-        },
-        error: function(response) { // Данные не отправлены
-            result_form.html('Ошибка. Данные не отправлены.'+ "<br>" + response.status);
-        }
-    });
-}
-function successCallback(response) {
-    if(response[0] != null) {
-        window.lastdatatime = response[response.length - 1].datetime;
-        window.queryparam = {"datatime" : window.lastdatatime};
-    }
-    list(response);
-}
-
-function getJSON(url,data,datatype) {
-   return $.get(url, data, successCallback, datatype);
-}
-
-function runapp() {
-    getJSON(url,'', "json");
-    setTimeout(()=>{setInterval(()=>getJSON(url,window.queryparam, "json"), 3000)},3000);
-}
-
-function list(result) {
-    if(result[0] != null){
-    let items = '<ul>';
-    let div = $("#mydiv");
-    if(result.length >= 30 ){
-        result.reverse().forEach((el) => {
-            if(el.author==="") el.author = "anonymous";
-            items += '<div class="media-block">';
-            if(el.image) {
-                items += '<div>';
-                items += '<img class="preview_image" src=http://localhost:3333/uploads/' + el.image + 'alt="">';
-                items += '</div>';
-            }
-            items += '<div>';
-            items += '<ul class="massage">';
-            items += '<li class="massage_who">' + el.author + '</li>';
-            items += '<li class="massage_text">' + el.message + '</li>';
-            items += '<li class="massage_time">' + el.datetime.split('T')[0] + " " + el.datetime.split('T')[1].split('.')[0] + '</li>';
-            items += '</ul>';
-            items += '</div>';
-            items += '</div>';
-        });
-        items += '</ul>';
-        div.html(items);
-    }else{
-          result.reverse().forEach((el) => {
-              if(el.author==="") el.author = "anonymous";
-              items += '<div>';
-              if(el.image) {
-                  items += '<div>';
-                  items += '<img class="preview_image" src=http://localhost:3333/uploads/' + el.image + ' alt="">';
-                  items += '</div>';
-              }
-              items += '<div>';
-              items += '<ul class="massage">';
-              items += '<li class="massage_who">' + el.author + '</li>';
-              items += '<li class="massage_text">' + el.message + '</li>';
-              items += '<li class="massage_time">' + el.datetime.split('T')[0] + " " + el.datetime.split('T')[1].split('.')[0] + '</li>';
-              items += '</ul>';
-              items += '</div>';
-              items += '</div>';
-        });
-        items += '</ul>';
-        items += div.html();
-        div.html(items);
-    }
-}}

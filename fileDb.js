@@ -33,5 +33,18 @@ module.exports = {
                 }
             })
         })
+    },
+    ChangeProduct:(product) =>{
+        let contents = JSON.stringify(data, null, 2);
+
+        return new Promise((resolve,reject)=>{
+            fs.writeFile("./product.json", contents, err=>{
+                if(err){
+                    reject();
+                }else{
+                    resolve(product);
+                }
+            })
+        })
     }
 };
