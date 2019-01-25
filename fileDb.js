@@ -35,8 +35,6 @@ module.exports = {
         })
     },
     ChangeProduct:(product) => {
-        console.log(product);
-        //let contents = JSON.stringify(data, null, 2);
         const id = data.findIndex(data1 => data1.id === product.id);
         data[id].name = product.name;
         data[id].description = product.description;

@@ -3,7 +3,7 @@ $(()=>{
     let container = $('#mydiv');
 
 
-    $("#mydiv").click(
+    container.click(
     function(event) {
             if(event.target.id.slice(0,3) === "btn"){
                 let idn = event.target.id.slice(-8);
@@ -35,13 +35,15 @@ $(()=>{
                         xhrObj.setRequestHeader("Content-Type","application/json");
                         xhrObj.setRequestHeader("Accept","application/json");
                     }
+                }).then(() =>{
+                    container.empty();
+                    getMessages();
                 })
             }else{
                 event.preventDefault();
             }
         }
     );
-
     getMessages = () => {
         $.ajax({
             method: "GET",
@@ -55,7 +57,7 @@ $(()=>{
                 div_name.append(label_name,input_name);
                 let div_description = $(`<div class="form-group">`);
                 let label_description = $(`<label for='description${response[i].id}'>description</label>`);
-                let input_description =$(`<textarea class="form-control" rows="2" id='description${response[i].id}'  name="description" required>`);
+                let input_description =$(`<input type="text" class="form-control" id='description${response[i].id}'  name="description" value='${response[i].description}' required>`);
                 div_description.append(label_description,input_description);
                 let div_price = $(`<div class="form-group">`);
                 let label_price = $(`<label for='price${response[i].id}'>price</label>`);
@@ -69,6 +71,12 @@ $(()=>{
                 div.append(button);
                 form.append(div_name,div_description,div_id,div_price,div);
                 container.prepend(form);
+                if(response[i].image){
+                    let div_img1 = $(`<div>`);
+                    let img = $(`<img class="preview_image" src='http://localhost:3333/uploads/${response[i].image}' alt="">`);
+                    div_img1.append(img);
+                    container.prepend(div_img1);
+                }
             }
         });
     };
@@ -82,7 +90,6 @@ $(()=>{
             return;
         }
         e.preventDefault();
-        console.log(document.getElementById("ajax_form"));
         const data = new FormData(document.getElementById("ajax_form"));
         $.ajax({
             method: "POST",
@@ -98,7 +105,7 @@ $(()=>{
             div_name.append(label_name,input_name);
             let div_description = $(`<div class="form-group">`);
             let label_description = $(`<label for='description${response.id}'>description</label>`);
-            let input_description =$(`<textarea class="form-control" rows="2" value='${response.description}' id='description${response.id}'  name="description" required>`);
+            let input_description =$(`<input type="text" class="form-control" value='${response.description}' id='description${response.id}'  name="description" value='${response.description}' required>`);
             div_description.append(label_description,input_description);
             let div_price = $(`<div class="form-group">`);
             let label_price = $(`<label for='price${response.id}'>price</label>`);
@@ -110,8 +117,14 @@ $(()=>{
             let div = $(`<div style="overflow: hidden; padding-right: .5em;">`);
             let button =$(`<input type="submit" id='btn${response.id}' class="btn btn-primary" value="save changes">`);
             div.append(button);
-            form.append(div_name,div_description,div_price,div_id,div);
+            form.append(div_name,div_description,div_id,div_price,div);
             container.prepend(form);
+            if(response.image){
+                let div_img1 = $(`<div>`);
+                let img =$(`<img class="preview_image" src='http://localhost:3333/uploads/${response.image}' alt="">`);
+                div_img1.append(img);
+                container.prepend(div_img1);
+            }
         })
     })
 });
