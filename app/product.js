@@ -1,6 +1,7 @@
 const express = require("express");
 const multer = require("multer");
 const path = require("path");
+const nanoid = require("nanoid");
 
 const fileDb = require("../fileDb");
 const config = require("../config");
@@ -34,7 +35,9 @@ const createRouter = ()=>{
                 res.send({message: "Error"});
             }
         }else {
-            fileDb.ChangeProduct(product);
+            fileDb.ChangeProduct(product).then(result=>{
+                res.send(result);
+            })
         }
     });
 

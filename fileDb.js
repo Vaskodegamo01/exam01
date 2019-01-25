@@ -34,9 +34,14 @@ module.exports = {
             })
         })
     },
-    ChangeProduct:(product) =>{
+    ChangeProduct:(product) => {
+        console.log(product);
+        //let contents = JSON.stringify(data, null, 2);
+        const id = data.findIndex(data1 => data1.id === product.id);
+        data[id].name = product.name;
+        data[id].description = product.description;
+        data[id].price = product.price;
         let contents = JSON.stringify(data, null, 2);
-
         return new Promise((resolve,reject)=>{
             fs.writeFile("./product.json", contents, err=>{
                 if(err){
