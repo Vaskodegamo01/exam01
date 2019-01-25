@@ -1,7 +1,21 @@
 const express = require("express");
-const router = express.Router();
-const fileDb = require("../fileDb");
+const multer = require("multer");
+const path = require("path");
 
+const fileDb = require("../fileDb");
+const config = require("../config");
+
+const  storage = multer.diskStorage({
+    destination(req,file,cd){
+        cd(null, config.uploadPath)
+    },
+    filename(req,file,cd){
+        cd(null,nanoid() + path.extname(file.originalname))
+    }
+});
+
+const upload = multer({storage});
+const router = express.Router();
 
 const createRouter = ()=>{
     router.get("/",(req,res)=>{

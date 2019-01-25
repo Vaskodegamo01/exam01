@@ -5,7 +5,7 @@ const product = require("./app/product");
 const fileDb = require("./fileDb");
 
 const app = express();
-
+app.use(express.static('public'));
 app.use(express.json());
 app.use(cors());
 
